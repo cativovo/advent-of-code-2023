@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"slices"
 	"strconv"
 	"strings"
 )
@@ -39,14 +40,32 @@ func getCalibrationValue(str string) int {
 		}
 
 		if f == "" {
-			if num, err := strconv.Atoi(str[i : i+1]); err == nil {
+			word := str[:i]
+			num := wordToNum(word)
+
+			if num > -1 {
 				f = strconv.Itoa(num)
+			} else {
+				c := str[i : i+1]
+
+				if _, err := strconv.Atoi(c); err == nil {
+					f = c
+				}
 			}
 		}
 
 		if s == "" {
-			if num, err := strconv.Atoi(str[j : j+1]); err == nil {
+			word := str[j:]
+			num := wordToNum(word)
+
+			if num > -1 {
 				s = strconv.Itoa(num)
+			} else {
+				c := str[j : j+1]
+
+				if _, err := strconv.Atoi(c); err == nil {
+					s = c
+				}
 			}
 		}
 	}
@@ -67,4 +86,17 @@ func getCalibrationValue(str string) int {
 	}
 
 	return result
+}
+
+func wordToNum(word string) int {
+	numsInWords := []string{"one", "two", "three", "four", "five", "six", "seven", "eight", "nine"}
+	i := slices.IndexFunc(numsInWords, func(s string) bool {
+		return strings.Contains(word, s)
+	})
+
+	if i > -1 {
+		return i + 1
+	}
+
+	return i
 }
